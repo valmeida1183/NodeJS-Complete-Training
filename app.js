@@ -1,11 +1,13 @@
 //const http = require('http'); // para usar o node puro, sem o express.js
 const express = require("express");
 const bodyParser = require("body-parser");
-const expressHbs = require("express-handlebars");
+// const expressHbs = require("express-handlebars");
 const path = require("path");
 
 const adminRoutes = require("./routes/admin");
 const defaultRoutes = require("./routes/shop");
+
+const errorController = require('./controllers/error');
 
 // configuração do express.js
 const app = express();
@@ -36,12 +38,9 @@ app.set("views", "views"); // configura a pasta onde ficam os templates
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public"))); // identifica a pasta que vai servir os arquivos estáticos.
 
-app.use("/admin", adminRoutes.routes); // importa os endpoints de um arquivo externo de rotas.
+app.use("/admin", adminRoutes); // importa os endpoints de um arquivo externo de rotas.
 app.use(defaultRoutes);
-app.use((req, res, next) => {
-  res.status(404).render("404", { pageTitle: "Page not Found", path: '/404' });
-  //.sendFile(path.join(__dirname, 'views', '404.html'));
-});
+app.use(errorController.get404);
 
 app.listen(3000);
 
