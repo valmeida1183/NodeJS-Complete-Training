@@ -8,6 +8,7 @@ const adminRoutes = require("./routes/admin");
 const defaultRoutes = require("./routes/shop");
 
 const errorController = require('./controllers/error');
+const db = require('./utils/database');
 
 // configuração do express.js
 const app = express();
