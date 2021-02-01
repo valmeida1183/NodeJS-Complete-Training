@@ -1,29 +1,30 @@
-const db = require("../utils/database");
-const Cart = require("./cart");
+const {Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../utils/database');
 
-module.exports = class Product {
-  constructor(id, title, imageUrl, description, price) {
-    this.id = id;
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.description = description;
-    this.price = price;
-  }
+// definindo a Model com o sequelize
+const Product = sequelize.define('product', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.DOUBLE,
+        allowNull: false        
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+});
 
-  save() {
-    return db.execute(
-      "INSERT INTO products(title, price, description, imageUrl) VALUES(?, ?, ?, ?)", // sintaxe do mySql2 para previnir Sql injection
-      [this.title, this.price, this.description, this.imageUrl]
-    );
-  }
-
-  static deleteById(id) {}
-
-  static fetchAll() {
-    return db.execute("SELECT * FROM products");
-  }
-
-  static findById(id) {
-    return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
-  }
-};
+module.exports = Product;
