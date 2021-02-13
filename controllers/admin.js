@@ -1,4 +1,4 @@
-const Product = require("../models/product");
+const Product = require("../models/mongoDb/product");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -15,12 +15,9 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) {
     return res.redirect("/");
   }
-  req.user
-    .getProducts({ where: { id: productId } })
-    //Product.findByPk(productId)
-    .then((products) => {
-      const product = products[0];
-      if (product.length === 0) {
+  Product.findById(productId)
+    .then((product) => {      
+      if (!product) {
         return res.redirect("/");
       }
 
@@ -37,15 +34,9 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   const productId = req.body.productId;
   const { title, imageUrl, description, price } = req.body;
-  Product.findByPk(productId)
-    .then((product) => {
-      product.title = title;
-      product.imageUrl = imageUrl;
-      product.description = description;
-      product.price = price;
+  const product = new Product(title, price, description, imageUrl, productId);
 
-      return product.save();
-    })
+  product.save()    
     .then((result) => {
       console.log("Updated Product!");
       res.redirect("/admin/product-list");
@@ -54,30 +45,23 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getAdminProducts = (req, res, next) => {
-  req.user
-    .getProducts()
-    .then((products) => {
+  Product.fetchAll()
+    .then(products => {
       res.render("admin/product-list", {
         prods: products,
         pageTitle: "Admin Product List",
         path: "/admin/product-list",
       });
     })
-    .catch((err) => console.log(err));
+    .catch(err => console.log(err));
 };
 
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
-  req.user
-    .createProduct({
-      // método criado pelo sequelize devido as configs de relacionamento
-      title,
-      price,
-      imageUrl,
-      description,
-    })
-    .then((result) => {
-      //console.log(result);
+  const product = new Product(title, price, description, imageUrl, null, req.user._id);
+
+  product.save()
+    .then((result) => {     
       console.log("Created Product!");
       res.redirect("/admin/product-list");
     })
@@ -86,11 +70,8 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findByPk(productId)
-    .then((product) => {
-      return product.destroy();
-    })
-    .then((result) => {
+  Product.deleteById(productId)
+    .then(() => {
       console.log("Deleted Product!");
       res.redirect("/admin/product-list");
     })

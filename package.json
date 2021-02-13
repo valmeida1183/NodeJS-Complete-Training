@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app_mongoDb.js"
   },
   "author": "Vinicius Lopes de Almeida",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-handlebars": "3.0",
+    "mongodb": "^3.6.3",
     "mysql2": "^2.2.5",
     "pug": "^3.0.0",
     "sequelize": "^6.5.0"
