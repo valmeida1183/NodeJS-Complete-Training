@@ -37,6 +37,12 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Prettier File Configuration
+*.prettierrc
+
+# Environmnt File Configuration
+*.env
+
 # Windows shortcuts
 *.lnk
 
