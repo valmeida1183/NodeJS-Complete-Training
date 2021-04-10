@@ -43,7 +43,7 @@ form {
 .main-header__nav {
     height: 100%;
     width: 100%;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: space-between;
 }
@@ -229,6 +229,26 @@ form {
     color: white;
 }
 
+.user-message {
+    border-radius: 3px;
+    margin: auto;
+    padding: 0.5rem;
+    text-align: center;
+    width: 90%;
+}
+
+.user-message--error {
+    background-color: #a5bdff;
+    border: 1px solid #1e5aff;
+    color: #1e5aff;
+}
+
+.user-message--error {
+    background-color: #e4abb6;
+    border: 1px solid #ff1f1f;
+    color: #ff1f1f;
+}
+
 @media (min-width: 768px) {
     .main-header__nav {
         display: flex;
@@ -236,5 +256,9 @@ form {
 
     #side-menu-toggle {
         display: none;
+    }
+
+    .user-message {
+        width: 30rem;
     }
 }
