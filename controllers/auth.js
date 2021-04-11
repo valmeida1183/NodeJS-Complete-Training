@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 const User = require('../models/mongoDb/user');
+const mailer = require('../utils/mailer');
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
@@ -80,7 +81,14 @@ exports.postSignup = (req, res, next) => {
                     newUser.save();
                 })
                 .then(() => {
-                    // redireciona para a página inicial após o signup
+                    return mailer.sendEmail({
+                        to: email,
+                        subject: 'Signup Succeeded',
+                        html: '<h1>You successfully sign up!</h1>',
+                    });
+                })
+                .then(() => {
+                    // redireciona para a página inicial após o signup e o email enviado.
                     res.redirect('/');
                 });
         })
