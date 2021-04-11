@@ -37,22 +37,25 @@ exports.postEditProduct = (req, res, next) => {
 
     Product.findById(productId)
         .then(product => {
+            if (product.userId.toString() !== req.user._id.toString()) {
+                return res.redirect('/');
+            }
+
             product.title = title;
             product.imageUrl = imageUrl;
             product.description = description;
             product.price = price;
 
-            return product.save();
-        })
-        .then(() => {
-            console.log('Updated Product!');
-            res.redirect('/admin/product-list');
+            return product.save().then(() => {
+                console.log('Updated Product!');
+                res.redirect('/admin/product-list');
+            });
         })
         .catch(err => console.log(err));
 };
 
 exports.getAdminProducts = (req, res, next) => {
-    Product.find()
+    Product.find({ userId: req.user._id })
         //.select('title prince -_id') exemplo de como escolher os campos retornados e excluir o _id que vem por default.
         //.populate('userId') --> exemplo de como trazer os dados do ojeto relacionado
         .then(products => {
@@ -77,7 +80,7 @@ exports.postAddProduct = (req, res, next) => {
 
     product
         .save()
-        .then(result => {
+        .then(() => {
             console.log('Created Product!');
             res.redirect('/admin/product-list');
         })
@@ -86,7 +89,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
-    Product.findByIdAndRemove(productId)
+    Product.deleteOne({ _id: productId, userId: req.user._id })
         .then(() => {
             console.log('Deleted Product!');
             res.redirect('/admin/product-list');
