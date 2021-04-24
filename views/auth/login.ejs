@@ -10,21 +10,31 @@
                 <%= errorMessage %>
             </div>
         <% } %>
-        <form class="form" action="/login" method="POST">
+        <form class="form" action="/login" method="POST" novalidate>
             <div class="form-control">
                 <label for="email">E-mail</label>
-                <input type="email" name="email" id="email"s>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>" 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value="<%= oldInputs.email %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input
+                    class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="password" 
+                    id="password"
+                    value="<%= oldInputs.password %>">
             </div>
-            <div class="centered">
+            <div class="form-control centered">
                 <button class="btn" type="submit">Login</button>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             </div>     
         </form>
-        <div class="centered">
+        <div class="form-control centered">
             <a href="/reset">Forgot Password</a>
         </div>
     </main>
