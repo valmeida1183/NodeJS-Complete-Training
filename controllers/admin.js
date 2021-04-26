@@ -1,5 +1,23 @@
 const { validationResult } = require('express-validator');
+
 const Product = require('../models/mongoDb/product');
+const errorUtils = require('../utils/error');
+
+exports.getAdminProducts = (req, res, next) => {
+    Product.find({ userId: req.user._id })
+        //.select('title prince -_id') exemplo de como escolher os campos retornados e excluir o _id que vem por default.
+        //.populate('userId') --> exemplo de como trazer os dados do ojeto relacionado
+        .then(products => {
+            res.render('admin/product-list', {
+                prods: products,
+                pageTitle: 'Admin Product List',
+                path: '/admin/product-list',
+            });
+        })
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
+};
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -35,7 +53,9 @@ exports.getEditProduct = (req, res, next) => {
                 validationErrors: [],
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -71,21 +91,9 @@ exports.postEditProduct = (req, res, next) => {
                 res.redirect('/admin/product-list');
             });
         })
-        .catch(err => console.log(err));
-};
-
-exports.getAdminProducts = (req, res, next) => {
-    Product.find({ userId: req.user._id })
-        //.select('title prince -_id') exemplo de como escolher os campos retornados e excluir o _id que vem por default.
-        //.populate('userId') --> exemplo de como trazer os dados do ojeto relacionado
-        .then(products => {
-            res.render('admin/product-list', {
-                prods: products,
-                pageTitle: 'Admin Product List',
-                path: '/admin/product-list',
-            });
-        })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
 
 exports.postAddProduct = (req, res, next) => {
@@ -95,7 +103,7 @@ exports.postAddProduct = (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product',
-            path: '/admin/edit-product',
+            path: '/admin/add-product',
             editing: false,
             hasError: true,
             product: { title, imageUrl, description, price },
@@ -118,7 +126,9 @@ exports.postAddProduct = (req, res, next) => {
             console.log('Created Product!');
             res.redirect('/admin/product-list');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -128,5 +138,7 @@ exports.postDeleteProduct = (req, res, next) => {
             console.log('Deleted Product!');
             res.redirect('/admin/product-list');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };

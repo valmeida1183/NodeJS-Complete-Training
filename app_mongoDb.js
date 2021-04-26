@@ -60,10 +60,14 @@ app.use((req, res, next) => {
 
     User.findById(req.session.user._id)
         .then(user => {
+            if (!user) return next();
+
             req.user = user;
             next();
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            throw new Error(err);
+        });
 });
 
 app.use((req, res, next) => {
@@ -75,7 +79,15 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes); // importa os endpoints de um arquivo externo de rotas.
 app.use(shopRoutes);
 app.use(authRoutes);
+app.get('/500', errorController.get500);
+
 app.use(errorController.get404);
+
+// middleware que trata erros tem 4 parâmetros, onde o primeiro é um objeto do tipo Error do javascript.
+app.use((error, req, res, next) => {
+    // res.status(error.httpStatusCode).render(...);
+    res.redirect('/500');
+});
 
 mongoose
     .connect(mongoDb.dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })

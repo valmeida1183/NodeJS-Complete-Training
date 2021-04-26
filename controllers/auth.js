@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator');
 
 const User = require('../models/mongoDb/user');
 const mailer = require('../utils/mailer');
+const errorUtils = require('../utils/error');
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
@@ -56,7 +57,6 @@ exports.postLogin = (req, res, next) => {
                         // normalmente não é preciso usar o SAVE após setar uma variável na session, mas nesse caso
                         // queremos garantir que o user só será redirecionado após a session estar salva
                         return req.session.save(err => {
-                            console.log(err);
                             res.redirect('/');
                         });
                     }
@@ -64,11 +64,12 @@ exports.postLogin = (req, res, next) => {
                     res.redirect('/login');
                 })
                 .catch(err => {
-                    console.log(err);
                     res.redirect('/login');
                 });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
 
 exports.postSignup = (req, res, next) => {
@@ -108,7 +109,7 @@ exports.postSignup = (req, res, next) => {
             res.redirect('/');
         })
         .catch(err => {
-            console.log(err);
+            return errorUtils.internalServerError(err, next);
         });
 };
 
@@ -165,7 +166,9 @@ exports.postReset = (req, res, next) => {
                 });
                 return res.redirect('/');
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                return errorUtils.internalServerError(err, next);
+            });
     });
 };
 
@@ -189,7 +192,9 @@ exports.getNewPassword = (req, res, next) => {
                 passwordToken: token,
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -210,5 +215,7 @@ exports.postNewPassword = (req, res, next) => {
         .then(() => {
             res.redirect('/login');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return errorUtils.internalServerError(err, next);
+        });
 };
