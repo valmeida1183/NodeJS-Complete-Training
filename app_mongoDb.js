@@ -1,11 +1,11 @@
 const dotenv = require('dotenv');
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const mongoDbSessionStoreConnect = require('connect-mongodb-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 const path = require('path');
 
 // seta as variáveis de ambiemte para o objeto process.env
@@ -33,8 +33,31 @@ const sessionStore = new MongoDbSessionStore({
 });
 
 //support parsing of application/x-www-form-urlencoded post data (ou seja os forms nativos do html)
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'))); // identifica a pasta que vai servir os arquivos estáticos.
+app.use(express.urlencoded({ extended: true }));
+
+// support parsing of multipart/form-data post data (ou seja os forms contendo textos e arquivos binários)
+const filestorage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, 'public/images');
+    },
+    filename: (req, file, callback) => {
+        callback(null, `${Date.now()}-${file.originalname}`);
+    },
+});
+
+const fileFilter = (req, file, callback) => {
+    const validMimeTypes = new Set(['image/png', 'image/jpg', 'image/jpeg']);
+    const isValidMimeType = validMimeTypes.has(file.mimetype);
+
+    callback(null, isValidMimeType);
+};
+app.use(multer({ storage: filestorage, fileFilter: fileFilter }).single('image'));
+
+// identifica a pasta que vai servir os arquivos estáticos.
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public/images', express.static(path.join(__dirname, 'public/images')));
+
+// configura a sessão
 app.use(
     session({
         secret: `${process.env.API_SESSION_SECRET}`,

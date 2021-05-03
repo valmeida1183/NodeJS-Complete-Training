@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const PDFDocument = require('pdfkit');
+
 const Product = require('../models/mongoDb/product');
 const Order = require('../models/mongoDb/order');
 
@@ -118,6 +122,69 @@ exports.postOrder = (req, res, next) => {
             res.redirect('/orders');
         })
         .catch(err => console.log(err));
+};
+
+exports.getInvoice = (req, res, next) => {
+    const orderId = req.params.orderId;
+    const invoiceFileName = `invoice-${orderId}.pdf`;
+    const invoiceFilePath = path.join('data', 'invoices', invoiceFileName);
+
+    Order.findById(orderId)
+        .then(order => {
+            // garante que mesmo authenticado, o user deve ser o mesmo que criou a order.
+            if (!order) {
+                return next(new Error('No order found.'));
+            }
+
+            if (order.user.userId.toString() !== req.user._id.toString()) {
+                return next(new Error('Unauthorized'));
+            }
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'inline;filename="' + invoiceFileName + '"');
+
+            const pdfDoc = new PDFDocument();
+            pdfDoc.pipe(fs.createWriteStream(invoiceFilePath));
+            pdfDoc.pipe(res);
+
+            pdfDoc.fontSize(26).text('Invoice', { underline: true, align: 'center' });
+            pdfDoc.text('------------------------------------------------------', { align: 'center' });
+            pdfDoc.moveDown();
+
+            let totalPrice = 0;
+            order.products.forEach(orderItem => {
+                totalPrice += orderItem.quantity * orderItem.product.price;
+                pdfDoc
+                    .fontSize(14)
+                    .text(`${orderItem.product.title} - ${orderItem.quantity} x $${orderItem.product.price}`);
+            });
+
+            pdfDoc.moveDown();
+            pdfDoc.fontSize(26).text('------------------------------------------------------', { align: 'center' });
+            pdfDoc.fontSize(14).text(`Total Price: ${totalPrice}`);
+
+            pdfDoc.end();
+
+            /* IMPORANTE - Para arquivos pequenos esta solução serve, mas se o arquivo for muito grande esta solução não é a melhor.
+            Pois desta forma ele lê o arquivo inteiro na memória e depois o server devolve o que pode ser um problema no servidor para muitos requests */
+            /* fs.readFile(invoiceFilePath, (err, data) => {
+                if (err) {
+                    return next(err);
+                }
+
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'inline;filename="' + invoiceFileName + '"');
+                res.send(data);
+            }); */
+
+            /* A solução ideal é servir o arquivo como um stream, onde os pedaços do arquivo são carregados em lotes na medida que é solicitado */
+            /*  const file = fs.createReadStream(invoiceFilePath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'inline;filename="' + invoiceFileName + '"');
+
+            file.pipe(res); */
+        })
+        .catch(err => next(err));
 };
 
 exports.getCheckout = (req, res, next) => {

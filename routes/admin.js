@@ -19,7 +19,6 @@ router.post(
     '/add-product',
     [
         body('title').isString().isLength({ min: 3 }).trim().withMessage('Title has an invalid value'),
-        body('imageUrl').isURL().withMessage('Url has an invalid value'),
         body('price').isFloat().withMessage('Price has an invalid value'),
         body('description').isLength({ min: 5, max: 400 }).trim().withMessage('Description has an invalid value'),
     ],
@@ -31,7 +30,6 @@ router.post(
     '/edit-product',
     [
         body('title').isString().isLength({ min: 3 }).trim().withMessage('Title has an invalid value'),
-        body('imageUrl').isURL().withMessage('Url has an invalid value'),
         body('price').isFloat().withMessage('Price has an invalid value'),
         body('description').isLength({ min: 5, max: 400 }).trim().withMessage('Description has an invalid value'),
     ],
