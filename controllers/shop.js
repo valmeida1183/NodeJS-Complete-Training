@@ -5,16 +5,36 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/mongoDb/product');
 const Order = require('../models/mongoDb/order');
 
+const ITEMS_PER_PAGE = 5;
+
 exports.getProducts = (req, res, next) => {
+    const page = +req.query.page;
+    let totalItems;
+
     Product.find()
+        .countDocuments()
+        .then(numProducts => {
+            totalItems = numProducts;
+
+            return Product.find()
+                .skip((page - 1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             res.render('shop/product-list', {
                 prods: products,
                 pageTitle: 'All Products',
                 path: '/product-list',
+                totalItems: totalItems,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                currentPage: page,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.getProduct = (req, res, next) => {
@@ -27,19 +47,37 @@ exports.getProduct = (req, res, next) => {
                 path: '/product-list',
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.getIndex = (req, res, next) => {
+    const page = +req.query.page;
+    let totalItems;
+
     Product.find()
+        .countDocuments()
+        .then(numProducts => {
+            totalItems = numProducts;
+
+            return Product.find()
+                .skip((page - 1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'Shop',
                 path: '/',
+                totalItems: totalItems,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                currentPage: page,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.getCart = (req, res, next) => {
@@ -54,7 +92,7 @@ exports.getCart = (req, res, next) => {
                 products: products,
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.postCart = (req, res, next) => {
@@ -67,7 +105,7 @@ exports.postCart = (req, res, next) => {
             console.log(result);
             res.redirect('/cart');
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -77,7 +115,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
         .then(() => {
             res.redirect('/cart');
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.getOrders = (req, res, next) => {
@@ -90,7 +128,7 @@ exports.getOrders = (req, res, next) => {
                 orders: orders,
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.postOrder = (req, res, next) => {
@@ -121,7 +159,7 @@ exports.postOrder = (req, res, next) => {
         .then(() => {
             res.redirect('/orders');
         })
-        .catch(err => console.log(err));
+        .catch(err => next(err));
 };
 
 exports.getInvoice = (req, res, next) => {

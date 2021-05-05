@@ -1,12 +1,13 @@
 const express = require('express');
 const shopController = require('../controllers/shop');
 const isAuth = require('../middleware/is-auth');
+const pagination = require('../middleware/pagination');
 
 const router = express.Router();
 
-router.get('/', shopController.getIndex);
+router.get('/', pagination, shopController.getIndex);
 
-router.get('/product-list', shopController.getProducts);
+router.get('/product-list', pagination, shopController.getProducts);
 
 router.get('/products/:productId', shopController.getProduct);
 

@@ -109,6 +109,7 @@ app.use(errorController.get404);
 // middleware que trata erros tem 4 parâmetros, onde o primeiro é um objeto do tipo Error do javascript.
 app.use((error, req, res, next) => {
     // res.status(error.httpStatusCode).render(...);
+    console.log(error);
     res.redirect('/500');
 });
 
