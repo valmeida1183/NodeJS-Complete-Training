@@ -37,6 +37,8 @@ router.post(
     productsController.postEditProduct
 );
 
-router.post('/delete-product', isAuth, productsController.postDeleteProduct);
+//router.post('/delete-product', isAuth, productsController.postDeleteProduct);
+//Delete Async
+router.delete('/product/:productId', isAuth, productsController.deleteProduct);
 
 module.exports = router;
