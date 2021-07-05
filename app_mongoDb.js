@@ -138,7 +138,7 @@ mongoose
     .connect(mongoDb.dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         //https.createServer({ key: privateKey, cert: certificade }, app).listen(process.env.APP_PORT || 3000); // exemplo de como habilitar o ssl manualmente
-        app.listen(process.env.APP_PORT || 3000);
+        app.listen(process.env.PORT || 3000);
         console.log(
             '\x1b[32m', // set green color
             `--------- Application is Running!!! [${process.env.NODE_ENV}] ---------`
