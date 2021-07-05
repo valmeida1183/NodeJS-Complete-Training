@@ -1,37 +1,44 @@
 {
-  "name": "nodejs-complete-guide",
-  "version": "1.0.0",
-  "description": "Complete NodeJs Guide",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app_mongoDb.js"
-  },
-  "author": "Vinicius Lopes de Almeida",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^2.0.7"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "connect-flash": "^0.1.1",
-    "connect-mongodb-session": "^2.4.1",
-    "csurf": "^1.11.0",
-    "dotenv": "^8.2.0",
-    "ejs": "^3.1.5",
-    "express": "^4.17.1",
-    "express-handlebars": "3.0",
-    "express-session": "^1.17.1",
-    "express-validator": "^6.10.0",
-    "mongodb": "^3.6.3",
-    "mongoose": "^5.11.16",
-    "multer": "^1.4.2",
-    "mysql2": "^2.2.5",
-    "nodemailer": "^6.5.0",
-    "pdfkit": "^0.12.1",
-    "pug": "^3.0.0",
-    "sequelize": "^6.5.0",
-    "stripe": "^8.148.0"
-  }
+    "name": "nodejs-complete-guide",
+    "version": "1.0.0",
+    "description": "Complete NodeJs Guide",
+    "engines": {
+        "node": "15.6.0"
+    },
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node app_mongoDb.js",
+        "start:dev": "nodemon app_mongoDb.js"
+    },
+    "author": "Vinicius Lopes de Almeida",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "compression": "^1.7.4",
+        "connect-flash": "^0.1.1",
+        "connect-mongodb-session": "^2.4.1",
+        "csurf": "^1.11.0",
+        "dotenv": "^8.2.0",
+        "ejs": "^3.1.5",
+        "express": "^4.17.1",
+        "express-handlebars": "3.0",
+        "express-session": "^1.17.1",
+        "express-validator": "^6.10.0",
+        "helmet": "^4.6.0",
+        "mongodb": "^3.6.3",
+        "mongoose": "^5.11.16",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.2",
+        "mysql2": "^2.2.5",
+        "nodemailer": "^6.5.0",
+        "pdfkit": "^0.12.1",
+        "pug": "^3.0.0",
+        "sequelize": "^6.5.0",
+        "stripe": "^8.148.0"
+    }
 }

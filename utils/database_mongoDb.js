@@ -6,16 +6,16 @@ const MongoClient = mongodb.MongoClient;
 
 let _db;
 
-const mongoAtlasDbUrl = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gmc3b.mongodb.net/shop?retryWrites=true&w=majority`;
+const mongoAtlasDbUrl = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gmc3b.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
-const mongoConnect = (callback) => {
+const mongoConnect = callback => {
     MongoClient.connect(mongoAtlasDbUrl, { useUnifiedTopology: true })
-        .then((client) => {
+        .then(client => {
             console.log('Connected!');
             _db = client.db();
             callback(client);
         })
-        .catch((err) => {
+        .catch(err => {
             console.log(err);
             throw err;
         });
